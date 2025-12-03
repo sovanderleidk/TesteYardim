@@ -33,10 +33,10 @@ TesteYardim/
 Este projeto roda **totalmente em Docker**, sem necessidade de instalar .NET localmente.
 
 ### Construa a imagem Docker
-    docker build -t teste-yardim -f TesteYardim.CSharp/Dockerfile .
+    docker build -t teste-yardim .  
 
 ### Inicie o container   
-    docker run -d -p 8080:8080 --name yardim-app teste-yardim
+    docker run -p 8080:8080 teste-yardim
 
 ### Para ver o projeto em execução 
     http://localhost:8080
