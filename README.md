@@ -11,12 +11,12 @@ Este projeto é uma implementação do conversor **JSON → CSV** conforme exigi
 - Código 100% documentado com XML Comments
 - Projeto de testes unitários com xUnit e Moq (12 testes cobrindo todos os cenários)
 
->  **Nenhuma biblioteca de conversão externa foi usada** — toda a lógica de CSV é feita manualmente, conforme o enunciado.
+>  **Nenhuma biblioteca de conversão externa foi usada** — toda a lógica de CSV é feita manualmente, conforme solicitado.
 
 ---
 
 ##  Estrutura do projeto
-
+``
 TesteYardim/
 ├── TesteYardim.CSharp/          # Aplicação principal (ASP.NET Core MVC)
 │   ├── Controllers/HomeController.cs
@@ -26,7 +26,7 @@ TesteYardim/
 │   └── Data/exemplo.json        # Dados carregados automaticamente
 ├── TesteYardim.CSharp.Tests/    # Testes unitários (xUnit + Moq)
 └── Dockerfile                   # Configuração para Docker
-
+``
 
 ##  Executar com Docker (recomendado)
 
