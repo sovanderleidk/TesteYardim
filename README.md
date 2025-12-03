@@ -16,7 +16,7 @@ Este projeto é uma implementação do conversor **JSON → CSV** conforme exigi
 ---
 
 ##  Estrutura do projeto
-``
+...
 TesteYardim/
 ├── TesteYardim.CSharp/          # Aplicação principal (ASP.NET Core MVC)
 │   ├── Controllers/HomeController.cs
@@ -26,7 +26,7 @@ TesteYardim/
 │   └── Data/exemplo.json        # Dados carregados automaticamente
 ├── TesteYardim.CSharp.Tests/    # Testes unitários (xUnit + Moq)
 └── Dockerfile                   # Configuração para Docker
-``
+...
 
 ##  Executar com Docker (recomendado)
 
