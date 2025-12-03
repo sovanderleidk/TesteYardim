@@ -52,4 +52,21 @@ Este projeto roda **totalmente em Docker**, sem necessidade de instalar .NET loc
    git clone https://github.com/seu-usuario/TesteYardim.git
    cd TesteYardim
 
+---
+
+![Tela do conversor](https://github.com/sovanderleidk/TesteYardim/blob/main/Captura%20de%20tela%202025-12-03%20153139.png)
+
+
+---
+
+![Tela do conversor](https://github.com/sovanderleidk/TesteYardim/blob/main/Captura%20de%20tela%202025-12-03%20153231.png)
+
+---
+
+![Tela do conversor](https://github.com/sovanderleidk/TesteYardim/blob/main/Captura%20de%20tela%202025-12-03%20153322.png)
+
+
+
+
+
 
