@@ -1,0 +1,275 @@
+﻿@{
+    ViewData["Title"] = "JSON2CSV";
+}
+
+<link rel="stylesheet" href="~/css/json2csv.css" />
+
+<div class="json2csv-container">
+    <h2 class="json2csv-title">Conversor JSON para CSV</h2>
+
+    <!-- Abas de entrada -->
+    <div class="input-tabs">
+        <button id="tabConverter" class="tab-button active">Conversão</button>
+        <button id="tabExample" class="tab-button">Exemplo</button>
+    </div>
+
+    <!-- Aba Conversão -->
+    <div id="tabConverterContent" class="converter-panel">
+        <label for="jsonInput">JSON de entrada:</label>
+        <textarea id="jsonInput" rows="8" class="textarea-input"></textarea>
+
+        <!-- Controles -->
+        <div class="control-row">
+            <label for="separator" class="separator-label">Separador:</label>
+            <input type="text" id="separator" value="," class="separator-input" maxlength="1" />
+
+            <button id="convertBtn" class="action-button btn-convert">Converter</button>
+            <button id="exportBtn" class="action-button btn-export">Exportar CSV</button>
+            <button id="clearBtn" class="action-button btn-clear">Limpar</button>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+
+        <!-- Abas de saída -->
+        <div class="output-tabs">
+            <div class="output-tab-header">
+                <button id="tabCsv" class="tab-button active">CSV</button>
+                <button id="tabTable" class="tab-button">Tabela</button>
+            </div>
+
+            <!-- Aba CSV -->
+            <div id="csvTabContent">
+                <label for="csvOutput">CSV de saída:</label>
+                <textarea id="csvOutput" rows="8" class="textarea-input" readonly></textarea>
+            </div>
+
+            <!-- Aba Tabela -->
+            <div id="tableTabContent" class="hidden">
+                <label>Tabela de visualização:</label>
+                <div class="table-container">
+                    <table id="csvTable" class="csv-table"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aba Exemplo -->
+    <div id="tabExampleContent" class="example-panel hidden">
+        <p>Copie o exemplo abaixo e cole na aba <strong>Conversão</strong>:</p>
+        <button id="copyExampleBtn" class="copy-button">Copiar Exemplo</button>
+        <pre id="exampleJson">@Html.Raw((ViewBag.JsonExemplo ?? "").Replace("<", "&lt;").Replace(">", "&gt;"))</pre>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Preenche automaticamente o campo de entrada com o exemplo
+        document.addEventListener('DOMContentLoaded', () => {
+            const exemplo = @Html.Raw(Json.Serialize(ViewBag.JsonExemplo ?? ""));
+            if (exemplo && exemplo.trim()) {
+                document.getElementById('jsonInput').value = exemplo;
+            }
+        });
+
+        // Alternar abas de ENTRADA
+        function activateTab(tabBtn, contentId) {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.converter-panel, .example-panel').forEach(el => el.classList.add('hidden'));
+
+            tabBtn.classList.add('active');
+            document.getElementById(contentId).classList.remove('hidden');
+        }
+
+        document.getElementById('tabConverter').addEventListener('click', () => {
+            activateTab(document.getElementById('tabConverter'), 'tabConverterContent');
+        });
+
+        document.getElementById('tabExample').addEventListener('click', () => {
+            activateTab(document.getElementById('tabExample'), 'tabExampleContent');
+        });
+
+        // Alternar abas de SAÍDA
+        function activateOutputTab(tabBtn, contentId) {
+            document.querySelectorAll('.output-tab-header .tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('#csvTabContent, #tableTabContent').forEach(el => el.classList.add('hidden'));
+
+            tabBtn.classList.add('active');
+            document.getElementById(contentId).classList.remove('hidden');
+
+            if (contentId === 'tableTabContent') {
+                renderCsvTable(document.getElementById('csvOutput').value);
+            }
+        }
+
+        document.getElementById('tabCsv').addEventListener('click', () => {
+            activateOutputTab(document.getElementById('tabCsv'), 'csvTabContent');
+        });
+
+        document.getElementById('tabTable').addEventListener('click', () => {
+            activateOutputTab(document.getElementById('tabTable'), 'tableTabContent');
+        });
+
+        // --- Função principal de conversão ---
+        async function convertJson() {
+            const jsonText = document.getElementById('jsonInput').value.trim();
+            const separator = (document.getElementById('separator').value || ',').charAt(0);
+            const errorDiv = document.getElementById('errorMessage');
+            const csvOutput = document.getElementById('csvOutput');
+            errorDiv.textContent = '';
+
+            if (!jsonText) {
+                errorDiv.textContent = 'Por favor, insira um JSON válido.';
+                return;
+            }
+
+            try {
+                const response = await fetch('/Home/ConvertJsonToCsv', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ json: jsonText, separator: separator })
+                });
+
+                const result = await response.text();
+                if (response.ok) {
+                    csvOutput.value = result;
+                    window.lastCsvResult = result;
+
+                    if (!document.getElementById('tableTabContent').classList.contains('hidden')) {
+                        renderCsvTable(result);
+                    }
+                } else {
+                    errorDiv.textContent = result || 'Erro ao converter JSON.';
+                }
+            } catch (err) {
+                errorDiv.textContent = 'Erro de conexão ou formato inválido.';
+            }
+        }
+
+        // --- ajusta tabela a partir do CSV ---
+        function renderCsvTable(csvText) {
+            const table = document.getElementById('csvTable');
+            table.innerHTML = '';
+
+            if (!csvText?.trim()) {
+                table.innerHTML = '<tr><td style="padding: 0.75rem; color: #888;">Nenhum dado para exibir</td></tr>';
+                return;
+            }
+
+            const lines = csvText.split('\n').filter(line => line.trim() !== '');
+            if (lines.length === 0) return;
+
+            const separator = lines[0].includes('";"') || (!lines[0].includes(',') && lines[0].includes(';')) ? ';' : ',';
+
+            const rows = lines.map(line => {
+                const fields = [];
+                let inQuotes = false;
+                let current = '';
+                for (let i = 0; i < line.length; i++) {
+                    const c = line[i];
+                    if (c === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (c === separator && !inQuotes) {
+                        fields.push(current);
+                        current = '';
+                    } else {
+                        current += c;
+                    }
+                }
+                fields.push(current);
+                return fields.map(f => f.replace(/""/g, '"').replace(/^"(.*)"$/, '$1'));
+            });
+
+            if (rows.length < 2) {
+                table.innerHTML = '<tr><td style="padding: 0.75rem; color: #888;">Dados insuficientes para exibir tabela.</td></tr>';
+                return;
+            }
+
+            const headers = rows[0];
+            const dataRows = rows.slice(1);
+
+            const linkImagemIndex = headers.indexOf('linkImagem');
+            let reorderedHeaders = headers;
+            let reorderedDataRows = dataRows;
+
+            if (linkImagemIndex !== -1 && linkImagemIndex !== 0) {
+                reorderedHeaders = ['linkImagem', ...headers.filter(h => h !== 'linkImagem')];
+                reorderedDataRows = dataRows.map(row => {
+                    const linkValue = row[linkImagemIndex];
+                    const otherValues = row.filter((_, idx) => idx !== linkImagemIndex);
+                    return [linkValue, ...otherValues];
+                });
+            }
+
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            reorderedHeaders.forEach(cell => {
+                const th = document.createElement('th');
+                th.textContent = cell;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            const tbody = document.createElement('tbody');
+            reorderedDataRows.forEach(dataRow => {
+                const tr = document.createElement('tr');
+                reorderedHeaders.forEach((_, colIndex) => {
+                    const td = document.createElement('td');
+                    const value = dataRow[colIndex] || '';
+
+                    if (colIndex === 0 && reorderedHeaders[0] === 'linkImagem' && value.trim()) {
+                        const img = document.createElement('img');
+                        img.src = value;
+                        img.alt = 'Imagem do produto';
+                        img.className = 'product-image';
+                        td.appendChild(img);
+                    } else {
+                        td.textContent = value;
+                    }
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
+        }
+
+        // --- Event listeners ---
+        document.getElementById('convertBtn').addEventListener('click', convertJson);
+
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            document.getElementById('jsonInput').value = '';
+            document.getElementById('csvOutput').value = '';
+            document.getElementById('errorMessage').textContent = '';
+            window.lastCsvResult = null;
+        });
+
+        // --- exmportando os dados para csv ---
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            const csv = window.lastCsvResult || document.getElementById('csvOutput').value;
+            if (!csv) {
+                document.getElementById('errorMessage').textContent = 'Nenhum CSV para exportar.';
+                return;
+            }
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'resultado.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        // --- copiando o exemplo para memoria ---
+        document.getElementById('copyExampleBtn').addEventListener('click', () => {
+            const text = document.getElementById('exampleJson').textContent.trim();
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.getElementById('copyExampleBtn');
+                const original = btn.textContent;
+                btn.textContent = 'Copiado!';
+                setTimeout(() => btn.textContent = original, 1500);
+            }).catch(() => alert('Falha ao copiar. Tente manualmente.'));
+        });
+    </script>
+}

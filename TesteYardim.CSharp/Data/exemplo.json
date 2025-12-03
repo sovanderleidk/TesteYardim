@@ -1,0 +1,92 @@
+[
+    {
+        "idProduto": 101,
+        "nomeProduto": "Notebook UltraSlim X1",
+        "quantidade": 2,
+        "valorUnitario": 3499.90,
+        "desconto": 150.00,
+        "qrcode": "0001112200000101",
+        "linkImagem": "https://picsum.photos/150?random=101"
+    },
+    {
+        "idProduto": 205,
+        "nomeProduto": "Mouse Óptico Ergonômico",
+        "quantidade": 5,
+        "valorUnitario": 45.90,
+        "desconto": 5.90,
+        "qrcode": "0001112200000102",
+        "linkImagem": "https://picsum.photos/150?random=205"
+    },
+    {
+        "idProduto": 312,
+        "nomeProduto": "Teclado Mecânico RGB",
+        "quantidade": 3,
+        "valorUnitario": 299.99,
+        "desconto": 20.00,
+        "qrcode": "0001112200000103",
+        "linkImagem": "https://picsum.photos/150?random=312"
+    },
+    {
+        "idProduto": 418,
+        "nomeProduto": "Monitor Curvo 27\"",
+        "quantidade": 1,
+        "valorUnitario": 1299.00,
+        "desconto": 100.00,
+        "qrcode": "0001112200000104",
+        "linkImagem": "https://picsum.photos/150?random=418"
+    },
+    {
+        "idProduto": 523,
+        "nomeProduto": "SSD NVMe 1TB",
+        "quantidade": 10,
+        "valorUnitario": 399.90,
+        "desconto": 0.00,
+        "qrcode": "0001112200000105",
+        "linkImagem": "https://picsum.photos/150?random=523"
+    },
+    {
+        "idProduto": 629,
+        "nomeProduto": "Webcam Full HD",
+        "quantidade": 4,
+        "valorUnitario": 189.50,
+        "desconto": 15.50,
+        "qrcode": "0001112200000106",
+        "linkImagem": "https://picsum.photos/150?random=629"
+    },
+    {
+        "idProduto": 734,
+        "nomeProduto": "Fone Bluetooth ANC",
+        "quantidade": 7,
+        "valorUnitario": 549.00,
+        "desconto": 49.00,
+        "qrcode": "0001112200000107",
+        "linkImagem": "https://picsum.photos/150?random=734"
+    },
+    {
+        "idProduto": 841,
+        "nomeProduto": "Carregador Rápido 65W",
+        "quantidade": 12,
+        "valorUnitario": 129.90,
+        "desconto": 10.00,
+        "qrcode": "0001112200000108",
+        "linkImagem": "https://picsum.photos/150?random=841"
+    },
+    {
+        "idProduto": 950,
+        "nomeProduto": "Mochila para Notebook",
+        "quantidade": 6,
+        "valorUnitario": 89.99,
+        "desconto": 9.99,
+        "qrcode": "0001112200000109",
+        "linkImagem": "https://picsum.photos/150?random=950"
+    },
+    {
+        "idProduto": 1062,
+        "nomeProduto": "Hub USB-C 7 em 1",
+        "quantidade": 8,
+        "valorUnitario": 219.00,
+        "desconto": 0.00,
+        "qrcode": "0001112200000110",
+        "linkImagem": "https://picsum.photos/150?random=1062"
+    }
+]
